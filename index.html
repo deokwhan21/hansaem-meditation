@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -14,47 +15,18 @@
             background-color: #fcfaf7;
             -webkit-font-smoothing: antialiased;
         }
-        h1, h2, h3 {
-            font-family: 'Noto Serif KR', serif;
-        }
-        
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        h1, h2, h3 { font-family: 'Noto Serif KR', serif; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* 인쇄 및 PDF 저장 시 스타일 */
         @media print {
-            body { background-color: white !important; margin: 0; padding: 0; }
-            #root { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
+            body { background-color: white !important; }
             .no-print { display: none !important; }
-            .print-only { display: block !important; }
-            
-            /* 모든 카드를 인쇄 시 노출 */
             .hidden { display: block !important; }
-            
-            .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl { box-shadow: none !important; border: 1px solid #eee !important; }
-            .rounded-3xl, .rounded-2xl { border-radius: 12px !important; }
-            .bg-amber-50 { background-color: #fffaf0 !important; border: 1px solid #fde68a !important; }
-            .bg-amber-900 { background-color: #451a03 !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            
-            /* 카드 배치 최적화 */
-            .grid { display: block !important; }
-            .mb-6, .mb-10, .mb-12 { margin-bottom: 20px !important; }
             div[class*="MeditationCard"] { page-break-inside: avoid !important; margin-bottom: 30px !important; }
-            
-            @page {
-                size: auto;
-                margin: 1.5cm;
-            }
         }
 
-        .fade-in {
-            animation: fadeIn 0.4s ease-out;
-        }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }

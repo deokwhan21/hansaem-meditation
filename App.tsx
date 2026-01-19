@@ -15,11 +15,10 @@ const App: React.FC = () => {
       setLoading(true);
       const data = await generateMeditation(sermonText);
       setResult(data);
-      // Scroll to result
       window.scrollTo({ top: 400, behavior: 'smooth' });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating meditation:", error);
-      alert("묵상 질문 생성 중 오류가 발생했습니다. 다시 시도해 주세요.");
+      alert(`오류 발생: ${error.message || "알 수 없는 오류가 발생했습니다. API Key 설정을 확인해주세요."}`);
     } finally {
       setLoading(false);
     }
