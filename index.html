@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>한샘교회 주간 묵상집</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Pretendard:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #fcfaf7;
+            -webkit-font-smoothing: antialiased;
+        }
+        h1, h2, h3 {
+            font-family: 'Noto Serif KR', serif;
+        }
+        
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 인쇄 및 PDF 저장 시 스타일 */
+        @media print {
+            body { background-color: white !important; margin: 0; padding: 0; }
+            #root { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            
+            /* 모든 카드를 인쇄 시 노출 */
+            .hidden { display: block !important; }
+            
+            .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl { box-shadow: none !important; border: 1px solid #eee !important; }
+            .rounded-3xl, .rounded-2xl { border-radius: 12px !important; }
+            .bg-amber-50 { background-color: #fffaf0 !important; border: 1px solid #fde68a !important; }
+            .bg-amber-900 { background-color: #451a03 !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            
+            /* 카드 배치 최적화 */
+            .grid { display: block !important; }
+            .mb-6, .mb-10, .mb-12 { margin-bottom: 20px !important; }
+            div[class*="MeditationCard"] { page-break-inside: avoid !important; margin-bottom: 30px !important; }
+            
+            @page {
+                size: auto;
+                margin: 1.5cm;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "react/": "https://esm.sh/react@^19.2.3/"
+  }
+}
+</script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>
+

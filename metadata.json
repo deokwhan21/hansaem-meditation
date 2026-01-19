@@ -1,0 +1,5 @@
+{
+  "name": "한샘교회 주간 묵상 생성기",
+  "description": "주일 설교문을 바탕으로 7일간의 따뜻한 묵상 질문지를 생성합니다.",
+  "requestFramePermissions": []
+}
