@@ -19,6 +19,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
     setEditableResult(initialResult);
     const now = new Date();
     setCurrentDayIndex(now.getDay());
+    // 주일이면 1, 월요일이면 2...
     setActiveDay(now.getDay() + 1);
   }, [initialResult]);
 
@@ -86,7 +87,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
                 onClick={handlePrint}
                 className="flex-1 md:flex-none bg-white text-gray-700 border border-gray-200 px-4 py-3 rounded-2xl text-sm font-bold hover:bg-gray-50"
             >
-                PDF/인쇄
+                인쇄/PDF
             </button>
             <button 
                 onClick={handleCopyText}
@@ -97,7 +98,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
         </div>
       )}
 
-      {/* 헤더 카드 */}
+      {/* 메인 설교 정보 카드 */}
       <div className="bg-white p-8 md:p-12 rounded-[40px] shadow-sm border border-amber-50 mb-8 text-center relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-amber-200 via-amber-500 to-amber-200 opacity-20"></div>
         {isEditing ? (
@@ -126,7 +127,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
         )}
       </div>
 
-      {/* 요일 탭 */}
+      {/* 요일 선택 탭 */}
       <div className="no-print flex justify-center gap-3 mb-10 overflow-x-auto pb-4 scrollbar-hide px-2">
         {editableResult.meditations.map((m, idx) => {
           const locked = isLocked(m.day);
@@ -151,7 +152,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
         })}
       </div>
 
-      {/* 묵상 카드 내용 */}
+      {/* 활성화된 요일의 묵상 카드 */}
       <div className="relative max-w-2xl mx-auto">
         {editableResult.meditations.map((meditation, idx) => (
           <div key={meditation.day} className={activeDay === meditation.day ? 'block animate-in fade-in zoom-in-95 duration-500' : 'hidden'}>
@@ -165,7 +166,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
         ))}
       </div>
 
-      {/* 하단 장식/성구 */}
+      {/* 하단 성구 장식 */}
       <div className="bg-amber-900 text-amber-50 p-10 md:p-14 rounded-[40px] shadow-2xl text-center mt-16 mb-12 relative overflow-hidden">
         <div className="absolute top-0 right-0 p-4 text-6xl opacity-10 pointer-events-none">📖</div>
         <p className="text-base md:text-lg font-serif italic mb-6 leading-relaxed max-w-lg mx-auto">
@@ -176,7 +177,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
       
       {isShareMode && (
         <div className="text-center no-print pb-10">
-            <p className="text-sm text-amber-800/40 font-medium italic">말씀과 함께하는 거룩한 동행</p>
+            <p className="text-sm text-amber-800/40 font-medium italic">말씀과 함께하는 성도들의 거룩한 동행</p>
         </div>
       )}
     </div>

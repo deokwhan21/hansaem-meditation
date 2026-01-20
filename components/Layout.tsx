@@ -8,12 +8,17 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({ children, isShareMode = false }) => {
   return (
     <div className="min-h-screen flex flex-col items-center py-4 md:py-8 px-4 md:px-8 max-w-4xl mx-auto">
-      <header className="w-full text-center mb-12 no-print">
+      <header className="w-full text-center mb-10 no-print">
         <h1 className="text-4xl font-bold text-amber-900 mb-2 font-serif">한샘교회</h1>
         <p className="text-xl text-amber-700 font-medium tracking-tight">
-          {isShareMode ? '날마다 되새김질하는 주일말씀 묵상' : '주간 묵상 생성기'}
+          날마다 되새김질하는 주일말씀 묵상
         </p>
         <div className="mt-4 h-1 w-24 bg-amber-200 mx-auto rounded-full"></div>
+        {!isShareMode && (
+          <span className="inline-block mt-2 text-[10px] text-amber-400 font-bold uppercase tracking-widest bg-amber-50 px-2 py-0.5 rounded border border-amber-100">
+            Manager Mode
+          </span>
+        )}
       </header>
       
       <main className="w-full flex-1">
