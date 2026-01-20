@@ -32,6 +32,8 @@ const App: React.FC = () => {
       setLoading(true);
       const data = await generateMeditation(sermonText);
       setResult(data);
+      // 생성 직후에는 공유 모드가 아님
+      setIsShareMode(false);
       window.scrollTo({ top: 100, behavior: 'smooth' });
     } catch (error: any) {
       console.error("Error:", error);
