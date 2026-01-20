@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { WeeklyMeditationResult } from "../types";
 
@@ -11,11 +10,11 @@ const SYSTEM_INSTRUCTION = `
 `;
 
 export const generateMeditation = async (sermonText: string): Promise<WeeklyMeditationResult> => {
-  // Vercel 환경 변수에서 API KEY를 가져옵니다.
+  // 빌드 시점에 주입된 API_KEY를 가져옵니다.
   const apiKey = process.env.API_KEY;
   
-  if (!apiKey) {
-    throw new Error("API_KEY가 설정되지 않았습니다. Vercel 설정에서 Environment Variables를 확인해주세요.");
+  if (!apiKey || apiKey === "undefined") {
+    throw new Error("API Key가 설정되지 않았습니다. Vercel 설정에서 API_KEY를 확인하고 Redeploy 해주세요.");
   }
 
   const ai = new GoogleGenAI({ apiKey });
@@ -54,9 +53,13 @@ export const generateMeditation = async (sermonText: string): Promise<WeeklyMedi
       },
     });
 
+    if (!response.text) {
+      throw new Error("AI로부터 응답을 받지 못했습니다.");
+    }
+
     const result = JSON.parse(response.text);
     return result as WeeklyMeditationResult;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gemini API Error:", error);
     throw error;
   }
