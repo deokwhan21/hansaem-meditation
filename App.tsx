@@ -15,15 +15,43 @@ const App: React.FC = () => {
     const sharedData = params.get('d');
     
     if (sharedData) {
-      try {
-        const bytes = new Uint8Array(atob(sharedData).split("").map(c => c.charCodeAt(0)));
-        const str = new TextDecoder().decode(bytes);
-        const data = JSON.parse(str);
-        setResult(data);
-        setIsShareMode(true);
-      } catch (e) {
-        console.error("데이터 복원 실패", e);
-      }
+      const decompress = async (base64: string) => {
+        try {
+          // URL Safe Base64 복원 (필요한 경우)
+          const normalizedBase64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+          const binary = atob(normalizedBase64);
+          const bytes = new Uint8Array(binary.length);
+          for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+          }
+          
+          try {
+            // GZIP 압축 해제 시도 (현대적 브라우저 API)
+            const ds = new DecompressionStream('gzip');
+            const writer = ds.writable.getWriter();
+            writer.write(bytes);
+            writer.close();
+            
+            const response = new Response(ds.readable);
+            const arrayBuffer = await response.arrayBuffer();
+            const str = new TextDecoder().decode(arrayBuffer);
+            const data = JSON.parse(str);
+            
+            setResult(data);
+            setIsShareMode(true);
+          } catch (err) {
+            console.log("GZIP 해제 실패, 일반 텍스트로 시도합니다.");
+            // 구버전(압축 안된 데이터) 호환성 유지
+            const str = new TextDecoder().decode(bytes);
+            const data = JSON.parse(str);
+            setResult(data);
+            setIsShareMode(true);
+          }
+        } catch (e) {
+          console.error("데이터 복원 실패", e);
+        }
+      };
+      decompress(sharedData);
     }
   }, []);
 
@@ -55,7 +83,7 @@ const App: React.FC = () => {
         {!result ? (
           <div className="animate-in fade-in duration-700">
             <div className="bg-amber-50 p-6 rounded-2xl mb-8 border border-amber-100">
-                <p className="text-amber-800 text-center font-medium">
+                <p className="text-amber-800 text-center font-medium text-sm md:text-base">
                   "말씀의 은혜가 삶의 현장으로 이어지도록"<br/>
                   주일 설교문을 입력하면 일주일간의 깊은 묵상 질문지가 생성됩니다.
                 </p>
@@ -64,7 +92,6 @@ const App: React.FC = () => {
           </div>
         ) : (
           <div className="animate-in slide-in-from-bottom duration-500">
-            {/* 성도 모드가 아닐 때만 새로운 입력 버튼 표시 */}
             {!isShareMode && (
               <div className="flex justify-start items-center mb-6 no-print">
                    <button 
@@ -81,13 +108,14 @@ const App: React.FC = () => {
       </div>
 
       {loading && (
-        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-4">
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-4 text-center">
             <div className="relative w-20 h-20 mb-6">
                 <div className="absolute inset-0 border-4 border-amber-100 rounded-full"></div>
                 <div className="absolute inset-0 border-4 border-amber-600 rounded-full border-t-transparent animate-spin"></div>
                 <div className="absolute inset-0 flex items-center justify-center text-xl">✨</div>
             </div>
             <h3 className="text-lg font-bold text-amber-900 mb-2 font-serif">말씀을 묵상으로 엮는 중...</h3>
+            <p className="text-sm text-amber-700">잠시만 기다려 주시면 7일간의 묵상이 완성됩니다.</p>
         </div>
       )}
     </Layout>
