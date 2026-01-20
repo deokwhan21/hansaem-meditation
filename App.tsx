@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { SermonInput } from './components/SermonInput';
 import { ResultDisplay } from './components/ResultDisplay';
@@ -9,16 +8,35 @@ import { WeeklyMeditationResult } from './types';
 const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<WeeklyMeditationResult | null>(null);
+  const [isShareMode, setIsShareMode] = useState(false);
+
+  // URL에서 데이터를 확인하여 공유 모드로 설정
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sharedData = params.get('d');
+    
+    if (sharedData) {
+      try {
+        const bytes = new Uint8Array(atob(sharedData).split("").map(c => c.charCodeAt(0)));
+        const str = new TextDecoder().decode(bytes);
+        const data = JSON.parse(str);
+        setResult(data);
+        setIsShareMode(true);
+      } catch (e) {
+        console.error("데이터 복원 실패", e);
+      }
+    }
+  }, []);
 
   const handleGenerate = async (sermonText: string) => {
     try {
       setLoading(true);
       const data = await generateMeditation(sermonText);
       setResult(data);
-      window.scrollTo({ top: 400, behavior: 'smooth' });
+      window.scrollTo({ top: 100, behavior: 'smooth' });
     } catch (error: any) {
-      console.error("Error generating meditation:", error);
-      alert(`오류 발생: ${error.message || "알 수 없는 오류가 발생했습니다. API Key 설정을 확인해주세요."}`);
+      console.error("Error:", error);
+      alert(`오류: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -26,11 +44,13 @@ const App: React.FC = () => {
 
   const reset = () => {
     setResult(null);
+    setIsShareMode(false);
+    window.history.replaceState({}, '', window.location.pathname);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <Layout>
+    <Layout hideHeader={isShareMode}>
       <div className="flex flex-col gap-8 w-full">
         {!result ? (
           <div className="animate-in fade-in duration-700">
@@ -44,30 +64,29 @@ const App: React.FC = () => {
           </div>
         ) : (
           <div className="animate-in slide-in-from-bottom duration-500">
-            <div className="flex justify-between items-center mb-6 no-print">
-                 <button 
-                    onClick={reset}
-                    className="text-amber-700 font-medium hover:underline flex items-center gap-1"
-                 >
-                    ← 새로운 설교문 입력하기
-                 </button>
-            </div>
-            <ResultDisplay result={result} />
+            {!isShareMode && (
+              <div className="flex justify-between items-center mb-6 no-print">
+                   <button 
+                      onClick={reset}
+                      className="text-amber-700 text-sm font-medium hover:underline flex items-center gap-1"
+                   >
+                      ← 새로운 설교문 입력
+                   </button>
+              </div>
+            )}
+            <ResultDisplay result={result} isShareMode={isShareMode} />
           </div>
         )}
       </div>
 
       {loading && (
-        <div className="fixed inset-0 bg-white/60 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-4">
-            <div className="relative w-24 h-24 mb-6">
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-4">
+            <div className="relative w-20 h-20 mb-6">
                 <div className="absolute inset-0 border-4 border-amber-100 rounded-full"></div>
                 <div className="absolute inset-0 border-4 border-amber-600 rounded-full border-t-transparent animate-spin"></div>
-                <div className="absolute inset-0 flex items-center justify-center text-2xl">✨</div>
+                <div className="absolute inset-0 flex items-center justify-center text-xl">✨</div>
             </div>
-            <h3 className="text-xl font-bold text-amber-900 mb-2">말씀을 묵상으로 엮는 중...</h3>
-            <p className="text-amber-700 text-center animate-pulse">
-                설교의 핵심을 따라 삶의 질문들을 갈무리하고 있습니다.
-            </p>
+            <h3 className="text-lg font-bold text-amber-900 mb-2">말씀을 묵상으로 엮는 중...</h3>
         </div>
       )}
     </Layout>
