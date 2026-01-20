@@ -65,7 +65,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
 
   return (
     <div className="w-full fade-in pb-10 px-0">
-      {/* 목사님 전용 도구 모음 */}
+      {/* 목사님 전용 도구 모음 (성도 모드에선 절대 안 보임) */}
       {!isShareMode && (
         <div className="flex flex-wrap justify-center gap-2 mb-8 no-print sticky top-4 z-20 bg-white/95 backdrop-blur-md p-3 rounded-3xl shadow-xl border border-amber-100 max-w-2xl mx-auto">
             <button 
@@ -175,8 +175,8 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
       </div>
       
       {isShareMode && (
-        <div className="text-center no-print">
-            <p className="text-sm text-amber-800/40 mb-8 font-medium italic">말씀과 함께하는 거룩한 동행</p>
+        <div className="text-center no-print pb-10">
+            <p className="text-sm text-amber-800/40 font-medium italic">말씀과 함께하는 거룩한 동행</p>
         </div>
       )}
     </div>

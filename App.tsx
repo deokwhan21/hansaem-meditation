@@ -10,7 +10,6 @@ const App: React.FC = () => {
   const [result, setResult] = useState<WeeklyMeditationResult | null>(null);
   const [isShareMode, setIsShareMode] = useState(false);
 
-  // URL에서 데이터를 확인하여 공유 모드로 설정
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const sharedData = params.get('d');
@@ -45,7 +44,6 @@ const App: React.FC = () => {
   const reset = () => {
     setResult(null);
     setIsShareMode(false);
-    // URL 파라미터 제거
     window.history.replaceState({}, '', window.location.pathname);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -65,7 +63,7 @@ const App: React.FC = () => {
           </div>
         ) : (
           <div className="animate-in slide-in-from-bottom duration-500">
-            {/* 성도 모드(isShareMode)가 아닐 때만 '새로운 설교문 입력' 버튼 표시 */}
+            {/* 성도 모드가 아닐 때만 새로운 입력 버튼 표시 */}
             {!isShareMode && (
               <div className="flex justify-start items-center mb-6 no-print">
                    <button 
@@ -89,7 +87,6 @@ const App: React.FC = () => {
                 <div className="absolute inset-0 flex items-center justify-center text-xl">✨</div>
             </div>
             <h3 className="text-lg font-bold text-amber-900 mb-2 font-serif">말씀을 묵상으로 엮는 중...</h3>
-            <p className="text-amber-700 text-sm">잠시만 기다려 주시면 은혜로운 묵상지가 완성됩니다.</p>
         </div>
       )}
     </Layout>
