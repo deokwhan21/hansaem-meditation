@@ -23,7 +23,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
   }, [initialResult]);
 
   const isLocked = (dayNum: number) => {
-    if (isEditing || isShareMode === false) return false; // 목사님 모드일 땐 잠금 안함
+    if (isEditing || isShareMode === false) return false; 
     const dayIndex = dayNum - 1;
     return dayIndex > currentDayIndex;
   };
@@ -42,7 +42,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
       url.searchParams.set('d', base64);
       
       navigator.clipboard.writeText(url.toString()).then(() => {
-        alert('성도들에게 보낼 공유 링크가 복사되었습니다! 카톡방에 붙여넣기 하세요.');
+        alert('✅ 성도용 공유 링크가 복사되었습니다!\n\n이제 카카오톡방에 붙여넣기(붙이기) 하시면 됩니다.');
       });
     } catch (e) {
       alert('링크 생성 중 오류가 발생했습니다.');
@@ -54,7 +54,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
     editableResult.meditations.forEach((m, idx) => {
       fullText += `[${DAY_NAMES[idx]}요일] ${m.title}\n성구: ${m.scripture}\n묵상: ${m.reflectionQuestion}\n실천: ${m.practicalAction}\n기도: ${m.prayer}\n\n`;
     });
-    navigator.clipboard.writeText(fullText).then(() => alert('텍스트가 복사되었습니다.'));
+    navigator.clipboard.writeText(fullText).then(() => alert('텍스트 전체가 복사되었습니다.'));
   };
 
   const handleMeditationChange = (index: number, updatedDay: DayMeditation) => {
@@ -65,62 +65,69 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
 
   return (
     <div className="w-full fade-in pb-10 px-0">
-      {/* 도구 모음 (성도 모드에선 숨김) */}
+      {/* 목사님 전용 도구 모음 */}
       {!isShareMode && (
-        <div className="flex flex-wrap justify-center gap-2 mb-8 no-print sticky top-4 z-20 bg-white/90 backdrop-blur-md p-2 rounded-2xl shadow-lg border border-amber-100">
+        <div className="flex flex-wrap justify-center gap-2 mb-8 no-print sticky top-4 z-20 bg-white/95 backdrop-blur-md p-3 rounded-3xl shadow-xl border border-amber-100 max-w-2xl mx-auto">
             <button 
                 onClick={handleShareLink}
-                className="flex-1 md:flex-none bg-amber-600 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-md hover:bg-amber-700 transition-all flex items-center justify-center gap-2"
+                className="flex-[2] md:flex-none bg-amber-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-amber-200 hover:bg-amber-700 transition-all flex items-center justify-center gap-2"
             >
                 🔗 카톡 공유 링크 생성
             </button>
             <button 
                 onClick={() => setIsEditing(!isEditing)}
-                className={`flex-1 md:flex-none px-4 py-2.5 rounded-full text-sm font-bold transition-all border ${
-                  isEditing ? 'bg-green-600 text-white border-green-600' : 'bg-white text-amber-800 border-amber-200'
+                className={`flex-1 md:flex-none px-4 py-3 rounded-2xl text-sm font-bold transition-all border ${
+                  isEditing ? 'bg-green-600 text-white border-green-600' : 'bg-white text-amber-800 border-amber-200 hover:bg-amber-50'
                 }`}
             >
-                {isEditing ? '수정 완료' : '내용 수정'}
+                {isEditing ? '수정 완료' : '수정/잠금해제'}
             </button>
             <button 
                 onClick={handlePrint}
-                className="hidden md:flex bg-gray-100 text-gray-700 px-4 py-2.5 rounded-full text-sm font-bold hover:bg-gray-200"
+                className="flex-1 md:flex-none bg-white text-gray-700 border border-gray-200 px-4 py-3 rounded-2xl text-sm font-bold hover:bg-gray-50"
             >
-                인쇄/PDF
+                PDF/인쇄
+            </button>
+            <button 
+                onClick={handleCopyText}
+                className="flex-1 md:flex-none bg-white text-gray-700 border border-gray-200 px-4 py-3 rounded-2xl text-sm font-bold hover:bg-gray-50"
+            >
+                텍스트 복사
             </button>
         </div>
       )}
 
       {/* 헤더 카드 */}
-      <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-amber-50 mb-6 text-center">
+      <div className="bg-white p-8 md:p-12 rounded-[40px] shadow-sm border border-amber-50 mb-8 text-center relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-amber-200 via-amber-500 to-amber-200 opacity-20"></div>
         {isEditing ? (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             <input 
-              className="text-xl font-bold text-amber-900 bg-amber-50 p-2 rounded text-center outline-none"
+              className="text-2xl font-bold text-amber-900 bg-amber-50/50 p-3 rounded-2xl text-center outline-none border border-amber-100 focus:border-amber-400"
               value={editableResult.sermonTitle}
               onChange={(e) => setEditableResult({...editableResult, sermonTitle: e.target.value})}
             />
             <input 
-              className="text-sm text-amber-800 bg-amber-50 p-2 rounded text-center outline-none"
+              className="text-base text-amber-800 bg-amber-50/50 p-2 rounded-xl text-center outline-none border border-amber-100 focus:border-amber-400"
               value={editableResult.mainScripture}
               onChange={(e) => setEditableResult({...editableResult, mainScripture: e.target.value})}
             />
           </div>
         ) : (
           <>
-            <span className="text-[10px] font-bold text-amber-600 tracking-widest uppercase mb-2 block">한샘교회 주간 묵상</span>
-            <h2 className="text-2xl md:text-3xl font-bold text-amber-900 mb-3 tracking-tight leading-tight">
+            <span className="text-xs font-bold text-amber-600 tracking-[0.2em] uppercase mb-4 block">HANSAEM METHODIST CHURCH</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-amber-900 mb-6 tracking-tight leading-tight">
               {editableResult.sermonTitle}
             </h2>
-            <div className="inline-block px-4 py-1.5 bg-amber-50 text-amber-800 rounded-full text-sm font-bold">
-              {editableResult.mainScripture}
+            <div className="inline-flex items-center px-6 py-2 bg-amber-50 text-amber-800 rounded-full text-sm font-bold border border-amber-100 shadow-sm">
+              <span className="mr-2 opacity-50">본문:</span> {editableResult.mainScripture}
             </div>
           </>
         )}
       </div>
 
       {/* 요일 탭 */}
-      <div className="no-print flex justify-center gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide">
+      <div className="no-print flex justify-center gap-3 mb-10 overflow-x-auto pb-4 scrollbar-hide px-2">
         {editableResult.meditations.map((m, idx) => {
           const locked = isLocked(m.day);
           const active = activeDay === m.day;
@@ -128,25 +135,26 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
             <button
               key={m.day}
               onClick={() => setActiveDay(m.day)}
-              className={`flex-shrink-0 w-14 h-16 rounded-2xl flex flex-col items-center justify-center transition-all ${
+              className={`flex-shrink-0 w-16 h-20 rounded-[24px] flex flex-col items-center justify-center transition-all duration-300 ${
                 active
-                  ? 'bg-amber-600 text-white shadow-lg scale-110 z-10'
-                  : 'bg-white text-amber-700 border border-amber-100'
-              } ${locked ? 'opacity-40 grayscale-[0.5]' : ''}`}
+                  ? 'bg-amber-600 text-white shadow-xl shadow-amber-200 -translate-y-1 scale-110 z-10'
+                  : 'bg-white text-amber-700 border border-amber-100 hover:border-amber-300 hover:bg-amber-50'
+              } ${locked ? 'opacity-40' : ''}`}
             >
-              <span className="text-[9px] font-bold opacity-70 mb-0.5">DAY {m.day}</span>
-              <span className="text-lg font-black leading-none">
-                {DAY_NAMES[idx]}{locked && "🔒"}
+              <span className={`text-[9px] font-bold mb-1 ${active ? 'opacity-80' : 'opacity-40'}`}>DAY {m.day}</span>
+              <span className="text-xl font-black leading-none">
+                {DAY_NAMES[idx]}
               </span>
+              {locked && <span className="text-[10px] mt-1">🔒</span>}
             </button>
           )
         })}
       </div>
 
       {/* 묵상 카드 내용 */}
-      <div className="relative">
+      <div className="relative max-w-2xl mx-auto">
         {editableResult.meditations.map((meditation, idx) => (
-          <div key={meditation.day} className={activeDay === meditation.day ? 'block animate-in fade-in duration-300' : 'hidden'}>
+          <div key={meditation.day} className={activeDay === meditation.day ? 'block animate-in fade-in zoom-in-95 duration-500' : 'hidden'}>
             <MeditationCard 
               data={meditation} 
               isEditing={isEditing}
@@ -157,17 +165,18 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
         ))}
       </div>
 
-      {/* 성구 하단 바 */}
-      <div className="bg-amber-900 text-amber-50 p-8 rounded-3xl shadow-xl text-center mt-12 mb-8">
-        <p className="text-sm md:text-base font-serif italic mb-4 leading-relaxed">
-          "사람아 주께서 선한 것이 무엇임을 네게 보이셨나니<br className="md:hidden"/> 여호와께서 네게 구하시는 것은 오직 정의를 행하며 인자를 사랑하며 <br className="md:hidden"/>겸손하게 네 하나님과 함께 행하는 것이 아니냐"
+      {/* 하단 장식/성구 */}
+      <div className="bg-amber-900 text-amber-50 p-10 md:p-14 rounded-[40px] shadow-2xl text-center mt-16 mb-12 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-4 text-6xl opacity-10 pointer-events-none">📖</div>
+        <p className="text-base md:text-lg font-serif italic mb-6 leading-relaxed max-w-lg mx-auto">
+          "사람아 주께서 선한 것이 무엇임을 네게 보이셨나니 여호와께서 네게 구하시는 것은 오직 정의를 행하며 인자를 사랑하며 겸손하게 네 하나님과 함께 행하는 것이 아니냐"
         </p>
-        <span className="text-[10px] font-bold tracking-widest opacity-60">- 미가 6:8 -</span>
+        <span className="text-xs font-bold tracking-widest opacity-50 border-t border-amber-50/20 pt-4 px-8 inline-block">- 미가 6:8 -</span>
       </div>
       
       {isShareMode && (
         <div className="text-center no-print">
-            <p className="text-xs text-amber-800/50 mb-4">말씀과 함께하는 복된 한 주 되시길 소망합니다.</p>
+            <p className="text-sm text-amber-800/40 mb-8 font-medium italic">말씀과 함께하는 거룩한 동행</p>
         </div>
       )}
     </div>

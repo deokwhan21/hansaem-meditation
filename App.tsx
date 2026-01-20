@@ -45,12 +45,13 @@ const App: React.FC = () => {
   const reset = () => {
     setResult(null);
     setIsShareMode(false);
+    // URL 파라미터 제거
     window.history.replaceState({}, '', window.location.pathname);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <Layout hideHeader={isShareMode}>
+    <Layout isShareMode={isShareMode}>
       <div className="flex flex-col gap-8 w-full">
         {!result ? (
           <div className="animate-in fade-in duration-700">
@@ -64,13 +65,14 @@ const App: React.FC = () => {
           </div>
         ) : (
           <div className="animate-in slide-in-from-bottom duration-500">
+            {/* 성도 모드(isShareMode)가 아닐 때만 '새로운 설교문 입력' 버튼 표시 */}
             {!isShareMode && (
-              <div className="flex justify-between items-center mb-6 no-print">
+              <div className="flex justify-start items-center mb-6 no-print">
                    <button 
                       onClick={reset}
-                      className="text-amber-700 text-sm font-medium hover:underline flex items-center gap-1"
+                      className="text-amber-700 text-sm font-bold hover:text-amber-900 flex items-center gap-1 bg-amber-50 px-4 py-2 rounded-full transition-colors"
                    >
-                      ← 새로운 설교문 입력
+                      ← 새로운 설교문 입력하기
                    </button>
               </div>
             )}
@@ -86,7 +88,8 @@ const App: React.FC = () => {
                 <div className="absolute inset-0 border-4 border-amber-600 rounded-full border-t-transparent animate-spin"></div>
                 <div className="absolute inset-0 flex items-center justify-center text-xl">✨</div>
             </div>
-            <h3 className="text-lg font-bold text-amber-900 mb-2">말씀을 묵상으로 엮는 중...</h3>
+            <h3 className="text-lg font-bold text-amber-900 mb-2 font-serif">말씀을 묵상으로 엮는 중...</h3>
+            <p className="text-amber-700 text-sm">잠시만 기다려 주시면 은혜로운 묵상지가 완성됩니다.</p>
         </div>
       )}
     </Layout>
