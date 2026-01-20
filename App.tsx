@@ -17,7 +17,6 @@ const App: React.FC = () => {
     if (sharedData) {
       const decompress = async (base64: string) => {
         try {
-          // URL Safe Base64 복원 (필요한 경우)
           const normalizedBase64 = base64.replace(/-/g, '+').replace(/_/g, '/');
           const binary = atob(normalizedBase64);
           const bytes = new Uint8Array(binary.length);
@@ -25,28 +24,38 @@ const App: React.FC = () => {
             bytes[i] = binary.charCodeAt(i);
           }
           
+          let jsonData;
           try {
-            // GZIP 압축 해제 시도 (현대적 브라우저 API)
             const ds = new DecompressionStream('gzip');
             const writer = ds.writable.getWriter();
             writer.write(bytes);
             writer.close();
-            
             const response = new Response(ds.readable);
             const arrayBuffer = await response.arrayBuffer();
             const str = new TextDecoder().decode(arrayBuffer);
-            const data = JSON.parse(str);
-            
-            setResult(data);
-            setIsShareMode(true);
+            jsonData = JSON.parse(str);
           } catch (err) {
-            console.log("GZIP 해제 실패, 일반 텍스트로 시도합니다.");
-            // 구버전(압축 안된 데이터) 호환성 유지
             const str = new TextDecoder().decode(bytes);
-            const data = JSON.parse(str);
-            setResult(data);
-            setIsShareMode(true);
+            jsonData = JSON.parse(str);
           }
+
+          // 압축을 위해 줄여놓은 항목명을 다시 원래대로 복원 (Short Keys -> Full Keys)
+          const data: WeeklyMeditationResult = {
+            sermonTitle: jsonData.st || jsonData.sermonTitle,
+            mainScripture: jsonData.ms || jsonData.mainScripture,
+            summary: jsonData.sm || jsonData.summary,
+            meditations: (jsonData.m || jsonData.meditations).map((m: any) => ({
+              day: m.d || m.day,
+              title: m.t || m.title,
+              scripture: m.sc || m.scripture,
+              reflectionQuestion: m.rq || m.reflectionQuestion,
+              practicalAction: m.pa || m.practicalAction,
+              prayer: m.pr || m.prayer
+            }))
+          };
+          
+          setResult(data);
+          setIsShareMode(true);
         } catch (e) {
           console.error("데이터 복원 실패", e);
         }
