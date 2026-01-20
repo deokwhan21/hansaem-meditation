@@ -34,30 +34,29 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
     setTimeout(() => window.print(), 300);
   };
 
-  // GZIP 압축을 통해 URL 길이를 대폭 축소
+  // 초단축 압축 로직 (JSON Key Mapping + GZIP)
   const getCompressedUrl = async () => {
-    const str = JSON.stringify(editableResult);
+    // 항목 이름을 최소한으로 줄여서 부피 축소
+    const shortData = {
+      st: editableResult.sermonTitle,
+      ms: editableResult.mainScripture,
+      sm: editableResult.summary,
+      m: editableResult.meditations.map(m => ({
+        d: m.day,
+        t: m.title,
+        sc: m.scripture,
+        rq: m.reflectionQuestion,
+        pa: m.practicalAction,
+        pr: m.prayer
+      }))
+    };
+    
+    const str = JSON.stringify(shortData);
     const blob = new Blob([str]);
     const stream = blob.stream().pipeThrough(new CompressionStream('gzip'));
     const compressedBuffer = await new Response(stream).arrayBuffer();
     const binary = String.fromCharCode(...new Uint8Array(compressedBuffer));
-    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); // URL Safe Base64
-  };
-
-  const handleShareLink = async () => {
-    try {
-      setIsProcessing(true);
-      const shortData = await getCompressedUrl();
-      const url = new URL(window.location.href.split('?')[0]);
-      url.searchParams.set('d', shortData);
-      
-      await navigator.clipboard.writeText(url.toString());
-      alert('✅ 성도용 링크가 압축되어 복사되었습니다!\n길이가 훨씬 짧아져 공유하기 좋아졌습니다.');
-    } catch (e) {
-      alert('링크 생성 중 오류가 발생했습니다.');
-    } finally {
-      setIsProcessing(false);
-    }
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); 
   };
 
   const handleKakaoTemplate = async () => {
@@ -70,7 +69,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
       const message = `[한샘교회 주간 묵상]\n\n제목: ${editableResult.sermonTitle}\n\n말씀의 은혜를 삶으로 이어가는\n7일간의 여정에 성도님들을 초대합니다.\n\n매일 정해진 시간에 아래 링크를 눌러\n오늘의 묵상을 확인해보세요. ✨\n\n📖 묵상집 바로가기:\n${url.toString()}`;
       
       await navigator.clipboard.writeText(message);
-      alert('✅ 카톡용 안내 메시지가 복사되었습니다!\n카톡방에 바로 "붙여넣기" 하시면 됩니다.');
+      alert('✅ 카톡 안내 메시지가 복사되었습니다!\n주소가 이전보다 훨씬 더 짧아졌습니다.');
     } catch (e) {
       alert('메시지 생성 중 오류가 발생했습니다.');
     } finally {
@@ -94,7 +93,6 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
 
   return (
     <div className="w-full fade-in pb-10 px-0">
-      {/* 목사님 전용 도구 모음 */}
       {!isShareMode && (
         <div className="flex flex-wrap justify-center gap-2 mb-8 no-print sticky top-4 z-20 bg-white/95 backdrop-blur-md p-3 rounded-3xl shadow-xl border border-amber-100 max-w-2xl mx-auto">
             <button 
@@ -127,7 +125,6 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
         </div>
       )}
 
-      {/* 헤더 정보 카드 */}
       <div className="bg-white p-8 md:p-12 rounded-[40px] shadow-sm border border-amber-50 mb-8 text-center relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-amber-200 via-amber-500 to-amber-200 opacity-20"></div>
         {isEditing ? (
@@ -156,7 +153,6 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
         )}
       </div>
 
-      {/* 요일 탭 */}
       <div className="no-print flex justify-center gap-3 mb-10 overflow-x-auto pb-4 scrollbar-hide px-2">
         {editableResult.meditations.map((m, idx) => {
           const locked = isLocked(m.day);
@@ -181,7 +177,6 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
         })}
       </div>
 
-      {/* 활성 묵상 카드 */}
       <div className="relative max-w-2xl mx-auto px-2">
         {editableResult.meditations.map((meditation, idx) => (
           <div key={meditation.day} className={activeDay === meditation.day ? 'block animate-in fade-in zoom-in-95 duration-500' : 'hidden'}>
@@ -195,7 +190,6 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result: initialRes
         ))}
       </div>
 
-      {/* 하단 성구 */}
       <div className="bg-amber-900 text-amber-50 p-10 md:p-14 rounded-[40px] shadow-2xl text-center mt-16 mb-12 relative overflow-hidden mx-2">
         <div className="absolute top-0 right-0 p-4 text-6xl opacity-10 pointer-events-none">📖</div>
         <p className="text-base md:text-lg font-serif italic mb-6 leading-relaxed max-w-lg mx-auto">
